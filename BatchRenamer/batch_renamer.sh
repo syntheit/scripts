@@ -9,31 +9,31 @@
 
 # The name of the show must be specified with --name
 
-name="";
-directory="";
-og_dir=$PWD;
+name=""
+directory=""
+og_dir=$PWD
 
 function batchRenamerHelp() {
-    echo "Daniel's Batch Renamer";
-    echo "--help - Displays help message";
+    echo "Daniel's Batch Renamer"
+    echo "--help - Displays help message"
     echo "--name - The show name to append to the episode titles"
 }
 
 
 function rename() {
-    i=0;
+    i=0
     for dir in */; do
-        cd "$og_dir/$dir";
+        cd "$og_dir/$dir"
         for file in {.*,*}; do
             if [[ $file == *S+([0-9])E+([0-9])* ]]; then
-                extension=${file##*.};
-                newname=$(echo $name $(echo $file | grep -Eo 'S[0-9]+E[0-9]+').$extension);
-                mv "$file" "$newname";
-                ((i++));
+                extension=${file##*.}
+                newname=$(echo $name $(echo $file | grep -Eo 'S[0-9]+E[0-9]+').$extension)
+                mv "$file" "$newname"
+                ((i++))
             fi
         done
     done
-    echo "$i files renamed";
+    echo "$i files renamed"
 }
 
 while [ "$1" != "" ]; do
