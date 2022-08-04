@@ -7,12 +7,20 @@
 
 function performance() {
     powerprofilesctl set performance
-    echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+    output=$(echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor)
+    status
 }
 
 function balanced() {
     powerprofilesctl set balanced
-    echo schedutil | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+    output=$(echo schedutil | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor)
+    status
+}
+
+function powersaver() {
+    powerprofilesctl set power-saver
+    output=$(echo powersave | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor)
+    status
 }
 
 function check(){
@@ -29,9 +37,16 @@ function check(){
 function status() {
     cpu_power_profile=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor)
     powerprofilesctl_profile=$(powerprofilesctl get)
-    
-    echo "CPU scaling governor: $cpu_power_profile 
+    if [[ "$cpu_power_profile" == "$powerprofilesctl_profile" ]]; then
+        echo "$cpu_power_profile"
+        elif [[ $cpu_power_profile == "powersave" && $powerprofilesctl_profile == "power-saver" ]]; then
+        echo "powersave"
+        elif [[ $cpu_power_profile == "schedutil" && $powerprofilesctl_profile == "balanced" ]]; then
+        echo "balanced"
+    else
+        echo "CPU scaling governor: $cpu_power_profile
 powerprofilesctl: $powerprofilesctl_profile"
+    fi
 }
 
 function helpMessage() {
@@ -47,11 +62,14 @@ check - set the power profile based on AC power state
 }
 
 case "$@" in
-    "performance" | "perf" | "2")
+    "performance" | "perf" | "0")
         performance
     ;;
     "balanced" | "bal" | "1")
         balanced
+    ;;
+    "powersave" | "powersaver" | "saver" | "save" | "2")
+        powersaver
     ;;
     "check" | "c")
         check
