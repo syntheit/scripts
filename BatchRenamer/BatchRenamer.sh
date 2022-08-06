@@ -30,8 +30,10 @@ function rename() {
                 extension=${file##*.}
                 if [[ $extension == "${supported_extensions[$extension]}" ]]; then
                     newname=$(echo $name $(echo $file | grep -Eo 'S[0-9]+E[0-9]+').$extension)
-                    mv "$file" "$newname"
-                    ((i++))
+                    if [[ "$file" != "$newname" ]]; then
+                        mv "$file" "$newname"
+                        ((i++))
+                    fi
                 fi
             fi
         done
