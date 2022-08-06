@@ -12,6 +12,7 @@
 name=""
 directory=""
 og_dir=$PWD
+declare -A supported_extensions=( ["mkv"]="mkv" ["mp4"]="mp4" ["srt"]="srt" )
 
 function batchRenamerHelp() {
     echo "Daniel's Batch Renamer"
@@ -27,9 +28,11 @@ function rename() {
         for file in {.*,*}; do
             if [[ $file == *S+([0-9])E+([0-9])* ]]; then
                 extension=${file##*.}
-                newname=$(echo $name $(echo $file | grep -Eo 'S[0-9]+E[0-9]+').$extension)
-                mv "$file" "$newname"
-                ((i++))
+                if [[ $extension == "${supported_extensions[$extension]}" ]]; then
+                    newname=$(echo $name $(echo $file | grep -Eo 'S[0-9]+E[0-9]+').$extension)
+                    mv "$file" "$newname"
+                    ((i++))
+                fi
             fi
         done
     done
@@ -47,6 +50,9 @@ while [ "$1" != "" ]; do
             exit
         ;;
         * )
+            echo "Invalid argument
+            "
+            batchRenamerHelp
             exit 0
     esac
     shift
